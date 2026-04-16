@@ -1,0 +1,97 @@
+<html>
+<head>
+  <title>SAP Keeper</title>
+
+  <HTA:APPLICATION
+    APPLICATIONNAME="SAPKeeper"
+    SINGLEINSTANCE="yes"
+    SCROLL="no"
+    INNERWIDTH="200"
+    INNERHEIGHT="220"
+  />
+
+  <style>
+    body { background: #111; color: #00ff88; font-family: 'Segoe UI', sans-serif; text-align: center; }
+    #btn { background: #1a1a1a; color: #00ff88; border: 2px solid #00ff88; padding: 15px; cursor: pointer; width: 80%; font-weight: bold; }
+    #btn.on { color: #ff4444; border-color: #ff4444; }
+    #timer { font-size: 30px; margin: 15px 0; color: #555; }
+  </style>
+
+  <script language="VBScript">
+    Option Explicit
+
+    Dim running, secs, oShell, timeoutId
+    Dim elBtn, elTimer, elStatus
+
+    Sub Window_OnLoad()
+      Set oShell  = CreateObject("WScript.Shell")
+      Set elBtn   = document.getElementById("btn")
+      Set elTimer = document.getElementById("timer")
+      Set elStatus= document.getElementById("status")
+
+      running = False
+      secs = 0
+      timeoutId = 0
+      UpdateUI "STANDBY", "START", "", "00:00"
+    End Sub
+
+    Sub Toggle()
+      running = Not running
+
+      If running Then
+        secs = 300
+        UpdateUI "ACTIVE", "STOP", "on", FormatTime(secs)
+        RunLoop
+      Else
+        If timeoutId <> 0 Then window.clearTimeout timeoutId
+        timeoutId = 0
+        secs = 0
+        UpdateUI "STANDBY", "START", "", "00:00"
+      End If
+    End Sub
+
+    Sub RunLoop()
+      If Not running Then Exit Sub
+
+      If secs <= 0 Then
+        On Error Resume Next
+        If oShell.AppActivate("SAP Easy Access") Then
+          oShell.SendKeys "{F15}"
+          elStatus.innerText = "ACTIVE (ping)"
+        Else
+          elStatus.innerText = "ACTIVE (SAP no encontrado)"
+        End If
+        On Error GoTo 0
+
+        secs = 300
+      Else
+        secs = secs - 1
+      End If
+
+      elTimer.innerText = FormatTime(secs)
+
+      timeoutId = window.setTimeout("RunLoop", 1000)
+    End Sub
+
+    Function FormatTime(ByVal totalSecs)
+      Dim m, s
+      m = Int(totalSecs / 60)
+      s = totalSecs Mod 60
+      FormatTime = Right("0" & m, 2) & ":" & Right("0" & s, 2)
+    End Function
+
+    Sub UpdateUI(ByVal st, ByVal bt, ByVal cls, ByVal tt)
+      elStatus.innerText = st
+      elBtn.innerText = bt
+      elBtn.className = cls
+      elTimer.innerText = tt
+    End Sub
+  </script>
+</head>
+
+<body>
+  <div id="timer">00:00</div>
+  <button id="btn" onclick="Toggle()">START</button>
+  <div id="status" style="font-size:10px; margin-top:10px;">STANDBY</div>
+</body>
+</html>
