@@ -21,7 +21,7 @@ You have 10 SAP windows open with data you cannot afford to lose. Your company k
     - Use the HTA if you want a pretty (ugly) button and a ticking timer to watch your 5 minutes of freedom.
 
 ### Common limitations (no surprises)
-    ❌ Screen must be unlocked (blame corporate security)
+    ❌ Screen must be unlocked (sorry, corporate security)
     ❌ SAP window must be visible (not minimized behind other apps)
     ❌ Will send F15 even while you're working (close it when you're back) (also stay sure to change it if u re in Mac)
     ❌ Not enterprise‑grade. Not even "grade". It's a lazy hack.
